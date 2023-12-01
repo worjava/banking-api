@@ -1,4 +1,4 @@
-package ru.astontest.bankingapi.advice;
+package ru.astontest.bankingapi.exception.advice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

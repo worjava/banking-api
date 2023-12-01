@@ -1,4 +1,4 @@
-package ru.astontest.bankingapi.service;
+package ru.astontest.bankingapi.service.Impl;
 
 import lombok.SneakyThrows;
 import org.springframework.transaction.annotation.Isolation;
@@ -13,6 +13,7 @@ import ru.astontest.bankingapi.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.astontest.bankingapi.service.BankTransactionService;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;

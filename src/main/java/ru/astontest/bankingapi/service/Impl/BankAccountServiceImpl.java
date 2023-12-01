@@ -1,4 +1,4 @@
-package ru.astontest.bankingapi.service;
+package ru.astontest.bankingapi.service.Impl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import ru.astontest.bankingapi.model.BankAccount;
 import ru.astontest.bankingapi.repository.BankAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.astontest.bankingapi.service.BankAccountService;
 
 import java.util.List;
 import java.util.NoSuchElementException;

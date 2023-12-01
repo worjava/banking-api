@@ -1,9 +1,10 @@
 package ru.astontest.bankingapi.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.astontest.bankingapi.dto.TransactionRequestDto;
 import ru.astontest.bankingapi.exception.InsufficientFundsException;
 import ru.astontest.bankingapi.model.BankAccount;
@@ -11,16 +12,16 @@ import ru.astontest.bankingapi.model.Transaction;
 import ru.astontest.bankingapi.model.TransactionType;
 import ru.astontest.bankingapi.repository.BankAccountRepository;
 import ru.astontest.bankingapi.repository.TransactionRepository;
+import ru.astontest.bankingapi.service.Impl.BankTransactionServiceImpl;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class BankTransactionServiceImplTest {
 
     @Mock
