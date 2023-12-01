@@ -46,7 +46,7 @@ public class BankTransactionServiceImpl implements BankTransactionService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    @Transactional
     public void transfer(Long fromAccountNumber, Long toAccountNumber, String pinCode, BigDecimal amount) {
         performTransaction(fromAccountNumber, pinCode, amount, TransactionType.TRANSFER);
         performTransaction(toAccountNumber, pinCode, amount, TransactionType.DEPOSIT);
