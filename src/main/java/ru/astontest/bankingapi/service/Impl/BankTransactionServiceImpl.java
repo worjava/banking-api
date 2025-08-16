@@ -19,6 +19,9 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,28 @@ public class BankTransactionServiceImpl implements BankTransactionService {
 
     private final BankAccountRepository bankAccountRepository;
     private final TransactionRepository transactionRepository;
+
+    private static final Map<TransactionType, BiConsumer<BankAccount, BigDecimal>> BALANCE_HANDLERS = createBalanceHandlers();
+
+    private static Map<TransactionType, BiConsumer<BankAccount, BigDecimal>> createBalanceHandlers() {
+        EnumMap<TransactionType, BiConsumer<BankAccount, BigDecimal>> map = new EnumMap<>(TransactionType.class);
+        map.put(TransactionType.DEPOSIT, (account, amount) -> {
+            account.setBalance(account.getBalance().add(amount));
+        });
+        map.put(TransactionType.WITHDRAW, (account, amount) -> {
+            if (account.getBalance().compareTo(amount) < 0) {
+                throw new InsufficientFundsException("Недостаточно средств на счете");
+            }
+            account.setBalance(account.getBalance().subtract(amount));
+        });
+        map.put(TransactionType.TRANSFER, (account, amount) -> {
+            if (account.getBalance().compareTo(amount) < 0) {
+                throw new InsufficientFundsException("Недостаточно средств на счете для перевода");
+            }
+            account.setBalance(account.getBalance().subtract(amount));
+        });
+        return map;
+    }
 
 
 
@@ -73,27 +98,11 @@ public class BankTransactionServiceImpl implements BankTransactionService {
         transactionRepository.save(transaction);
 
         // Обновление баланса
-        switch (transactionType) {
-            case DEPOSIT:
-
-                    account.setBalance(account.getBalance().add(amount));
-
-                break;
-            case WITHDRAW:
-                if (account.getBalance().compareTo(amount) < 0) {
-                    throw new InsufficientFundsException("Недостаточно средств на счете");
-                }
-                account.setBalance(account.getBalance().subtract(amount));
-                break;
-            case TRANSFER:
-                if (account.getBalance().compareTo(amount) < 0) {
-                    throw new InsufficientFundsException("Недостаточно средств на счете для перевода");
-                }
-                account.setBalance(account.getBalance().subtract(amount));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported transaction type");
+        BiConsumer<BankAccount, BigDecimal> handler = BALANCE_HANDLERS.get(transactionType);
+        if (handler == null) {
+            throw new IllegalArgumentException("Unsupported transaction type");
         }
+        handler.accept(account, amount);
 
         bankAccountRepository.save(account);
     }
