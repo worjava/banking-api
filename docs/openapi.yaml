@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: API управления банковскими картами
+  version: 1.0.0
+  description: Программный интерфейс для выпуска карт, управления пользователями и переводов между своими картами.
+servers:
+  - url: http://localhost:8090
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/auth/sign-up:
+    post:
+      tags: [Аутентификация]
+      summary: Зарегистрировать пользователя
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+      responses:
+        '200':
+          description: Токен доступа выдан
+  /api/v1/auth/sign-in:
+    post:
+      tags: [Аутентификация]
+      summary: Выполнить вход
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Токен доступа выдан
+  /api/v1/admin/users:
+    get:
+      tags: [Администрирование пользователей]
+      summary: Получить список пользователей
+      responses:
+        '200':
+          description: Страница пользователей
+    post:
+      tags: [Администрирование пользователей]
+      summary: Создать пользователя
+      responses:
+        '201':
+          description: Пользователь создан
+  /api/v1/admin/users/{id}/role:
+    patch:
+      tags: [Администрирование пользователей]
+      summary: Изменить роль пользователя
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Роль обновлена
+  /api/v1/admin/users/{id}:
+    delete:
+      tags: [Администрирование пользователей]
+      summary: Удалить пользователя
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '204':
+          description: Пользователь удален
+  /api/v1/admin/cards:
+    get:
+      tags: [Администрирование карт]
+      summary: Получить все карты с фильтрацией и пагинацией
+      responses:
+        '200':
+          description: Страница карт
+    post:
+      tags: [Администрирование карт]
+      summary: Выпустить карту пользователю
+      responses:
+        '201':
+          description: Карта создана
+  /api/v1/admin/cards/{id}/block:
+    patch:
+      tags: [Администрирование карт]
+      summary: Заблокировать карту
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '200':
+          description: Карта заблокирована
+  /api/v1/admin/cards/{id}/activate:
+    patch:
+      tags: [Администрирование карт]
+      summary: Активировать карту
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '200':
+          description: Карта активирована
+  /api/v1/admin/cards/{id}:
+    delete:
+      tags: [Администрирование карт]
+      summary: Удалить карту
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '204':
+          description: Карта удалена
+  /api/v1/cards:
+    get:
+      tags: [Карты пользователя]
+      summary: Получить свои карты с поиском и пагинацией
+      responses:
+        '200':
+          description: Страница карт пользователя
+  /api/v1/cards/{id}:
+    get:
+      tags: [Карты пользователя]
+      summary: Получить свою карту
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '200':
+          description: Карта пользователя
+  /api/v1/cards/{id}/balance:
+    get:
+      tags: [Карты пользователя]
+      summary: Получить баланс своей карты
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '200':
+          description: Баланс карты
+  /api/v1/cards/{id}/block-request:
+    post:
+      tags: [Карты пользователя]
+      summary: Запросить блокировку своей карты
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '200':
+          description: Карта заблокирована
+  /api/v1/transfers:
+    post:
+      tags: [Переводы]
+      summary: Перевести деньги между своими картами
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardTransferRequest'
+      responses:
+        '201':
+          description: Перевод выполнен
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CardId:
+      name: id
+      in: path
+      required: true
+      description: Идентификатор карты
+      schema:
+        type: integer
+        format: int64
+    UserId:
+      name: id
+      in: path
+      required: true
+      description: Идентификатор пользователя
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    SignUpRequest:
+      type: object
+      required: [username, email, password]
+      description: Запрос на регистрацию пользователя
+      properties:
+        username:
+          type: string
+          description: Логин пользователя
+        email:
+          type: string
+          description: Электронная почта
+        password:
+          type: string
+          description: Пароль
+    SignInRequest:
+      type: object
+      required: [username, password]
+      description: Запрос на вход пользователя
+      properties:
+        username:
+          type: string
+          description: Логин пользователя
+        password:
+          type: string
+          description: Пароль
+    CardTransferRequest:
+      type: object
+      required: [fromCardId, toCardId, amount]
+      description: Запрос на перевод между своими картами
+      properties:
+        fromCardId:
+          type: integer
+          format: int64
+          description: Карта списания
+        toCardId:
+          type: integer
+          format: int64
+          description: Карта зачисления
+        amount:
+          type: number
+          description: Сумма перевода

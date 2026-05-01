@@ -1,13 +1,35 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:bankdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
-  h2:
-    console:
-      enabled: true
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:8085/banking}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:banking}
+    password: ${SPRING_DATASOURCE_PASSWORD:banking}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    change-log: classpath:db/migration/db.changelog-master.yaml
+
+token:
+  signing:
+    key: ${JWT_SIGNING_KEY:MzM5Y2FjNmQ5ZGIwNGM1OTljNzE1OGQzYWZkYmFmNWE0NmZiMDA0Y2Q1MjFhZmQ1NjA0ZGE4YjcxNmIyNTRiZQ==}
+
+card:
+  crypto:
+    key: ${CARD_CRYPTO_KEY:YzMxNTM4ZjI2OTAxNDdkYzgyYjQ5NjRjN2YxODJjMWU=}
+  hash:
+    key: ${CARD_HASH_KEY:YmM3YTQ2N2M2MjA0NDBmOTlkMmQwOTFlMzRhNWEzYjY4MzQ1YjhhMjg3ZjI0YzA1OGEyYjAzODg4Mzc1M2Y4Zg==}
+  number:
+    bin: ${CARD_NUMBER_BIN:400000}
+    random-digits-count: ${CARD_NUMBER_RANDOM_DIGITS_COUNT:9}
+
+app:
+  bootstrap-admin:
+    enabled: ${BOOTSTRAP_ADMIN_ENABLED:true}
+    username: ${BOOTSTRAP_ADMIN_USERNAME:admin}
+    email: ${BOOTSTRAP_ADMIN_EMAIL:admin@example.com}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:admin123}

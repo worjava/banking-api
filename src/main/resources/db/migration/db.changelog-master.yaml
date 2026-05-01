@@ -1,0 +1,198 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-users
+      author: codex
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            columns:
+              - column:
+                  name: username
+
+  - changeSet:
+      id: 002-create-cards
+      author: codex
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: encrypted_number
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number_hash
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: last_four
+                  type: VARCHAR(4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiration_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: owner_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_cards_owner
+        - createIndex:
+            tableName: cards
+            indexName: idx_cards_owner_status
+            columns:
+              - column:
+                  name: owner_id
+              - column:
+                  name: status
+        - createIndex:
+            tableName: cards
+            indexName: idx_cards_owner_last_four
+            columns:
+              - column:
+                  name: owner_id
+              - column:
+                  name: last_four
+        - createIndex:
+            tableName: cards
+            indexName: idx_cards_status_expiration
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: expiration_date
+
+  - changeSet:
+      id: 003-create-card-transfers
+      author: codex
+      changes:
+        - createTable:
+            tableName: card_transfers
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: from_card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: card_transfers
+            baseColumnNames: from_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_transfers_from_card
+        - addForeignKeyConstraint:
+            baseTableName: card_transfers
+            baseColumnNames: to_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_transfers_to_card
+        - createIndex:
+            tableName: card_transfers
+            indexName: idx_transfers_from_created_at
+            columns:
+              - column:
+                  name: from_card_id
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: card_transfers
+            indexName: idx_transfers_to_created_at
+            columns:
+              - column:
+                  name: to_card_id
+              - column:
+                  name: created_at

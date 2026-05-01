@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: banking-api-postgres
+    environment:
+      POSTGRES_DB: banking
+      POSTGRES_USER: banking
+      POSTGRES_PASSWORD: banking
+    ports:
+      - "8085:5432"
+    volumes:
+      - banking-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banking -d banking"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: banking-api-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/banking
+      SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
+      SPRING_DATASOURCE_USERNAME: banking
+      SPRING_DATASOURCE_PASSWORD: banking
+      JWT_SIGNING_KEY: MzM5Y2FjNmQ5ZGIwNGM1OTljNzE1OGQzYWZkYmFmNWE0NmZiMDA0Y2Q1MjFhZmQ1NjA0ZGE4YjcxNmIyNTRiZQ==
+      CARD_CRYPTO_KEY: YzMxNTM4ZjI2OTAxNDdkYzgyYjQ5NjRjN2YxODJjMWU=
+      CARD_HASH_KEY: YmM3YTQ2N2M2MjA0NDBmOTlkMmQwOTFlMzRhNWEzYjY4MzQ1YjhhMjg3ZjI0YzA1OGEyYjAzODg4Mzc1M2Y4Zg==
+    ports:
+      - "8090:8080"
+
+volumes:
+  banking-postgres-data:
