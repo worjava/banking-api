@@ -18,6 +18,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Фильтр, который извлекает access token из заголовка Authorization.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -41,17 +44,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String token = header.substring(BEARER.length());
-            String username = jwtTokenProvider.extractUsername(token);
+            String username = jwtTokenProvider.extractUsername(token, TokenType.ACCESS);
+
+            System.out.println("JWT username = " + username);
+
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                if (jwtTokenProvider.isTokenValid(token, userDetails)) {
+
+                System.out.println("UserDetails username = " + userDetails.getUsername());
+                System.out.println("Authorities = " + userDetails.getAuthorities());
+
+                if (jwtTokenProvider.isAccessTokenValid(token, userDetails)) {
+                    System.out.println("JWT token is valid");
+
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
+
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    System.out.println("Authentication = " + SecurityContextHolder.getContext().getAuthentication());
+                } else {
+                    System.out.println("JWT token is NOT valid");
                 }
             }
         } catch (JwtException | IllegalArgumentException ex) {

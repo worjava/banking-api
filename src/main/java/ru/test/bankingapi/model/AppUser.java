@@ -18,6 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Сущность пользователя системы и источник данных для Spring Security.
+ */
 @Entity
 @Getter
 @Setter

@@ -1,5 +1,6 @@
 package ru.test.bankingapi.exception.advice;
 
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .toList();
         return build(HttpStatus.BAD_REQUEST, messages);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiError> handleInvalidSort(PropertyReferenceException ex) {
+        return build(HttpStatus.BAD_REQUEST, "Некорректное поле сортировки: " + ex.getPropertyName());
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message) {

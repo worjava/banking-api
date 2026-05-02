@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:8085/banking}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:8085/banking?currentSchema=banking}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
     username: ${SPRING_DATASOURCE_USERNAME:banking}
     password: ${SPRING_DATASOURCE_PASSWORD:banking}
@@ -15,8 +15,14 @@ spring:
     change-log: classpath:db/migration/db.changelog-master.yaml
 
 token:
-  signing:
-    key: ${JWT_SIGNING_KEY:MzM5Y2FjNmQ5ZGIwNGM1OTljNzE1OGQzYWZkYmFmNWE0NmZiMDA0Y2Q1MjFhZmQ1NjA0ZGE4YjcxNmIyNTRiZQ==}
+  issuer: ${JWT_ISSUER:banking-api}
+  audience: ${JWT_AUDIENCE:banking-api-clients}
+  access:
+    signing-key: ${JWT_SIGNING_KEY:MzM5Y2FjNmQ5ZGIwNGM1OTljNzE1OGQzYWZkYmFmNWE0NmZiMDA0Y2Q1MjFhZmQ1NjA0ZGE4YjcxNmIyNTRiZQ==}
+    expiration: ${JWT_ACCESS_EXPIRATION:PT15M}
+  refresh:
+    signing-key: ${JWT_REFRESH_SIGNING_KEY:YTQ2N2MzZTM4N2EzYzY0MGY4NzBjMDE0MDE0YjhhMzMzMDRmMmVmNGZkY2E2OTZkMzk2NGRlZGE4MmYxNDAwNQ==}
+    expiration: ${JWT_REFRESH_EXPIRATION:P7D}
 
 card:
   crypto:

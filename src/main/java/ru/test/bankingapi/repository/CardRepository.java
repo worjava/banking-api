@@ -11,6 +11,9 @@ import ru.test.bankingapi.model.Card;
 
 import java.util.Optional;
 
+/**
+ * Репозиторий для чтения и блокировок банковских карт.
+ */
 public interface CardRepository extends JpaRepository<Card, Long>, JpaSpecificationExecutor<Card> {
     boolean existsByNumberHash(String numberHash);
 

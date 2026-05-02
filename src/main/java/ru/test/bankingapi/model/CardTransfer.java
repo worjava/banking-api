@@ -18,6 +18,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+/**
+ * Перевод между двумя картами пользователя.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -55,6 +58,7 @@ public class CardTransfer {
         transfer.amount = amount;
         return transfer;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

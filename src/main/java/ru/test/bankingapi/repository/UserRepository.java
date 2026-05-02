@@ -6,6 +6,9 @@ import ru.test.bankingapi.model.Role;
 
 import java.util.Optional;
 
+/**
+ * Репозиторий пользователей системы.
+ */
 public interface UserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByUsername(String username);
 

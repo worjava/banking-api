@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-card-transfers
+      author: y.sterkhov
+      logicalFilePath: db/changelog/db.changelog-master.yaml
+      changes:
+        - createTable:
+            tableName: card_transfers
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: from_card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: to_card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: card_transfers
+            baseColumnNames: from_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_transfers_from_card
+        - addForeignKeyConstraint:
+            baseTableName: card_transfers
+            baseColumnNames: to_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_transfers_to_card
+        - createIndex:
+            tableName: card_transfers
+            indexName: idx_transfers_from_created_at
+            columns:
+              - column:
+                  name: from_card_id
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: card_transfers
+            indexName: idx_transfers_to_created_at
+            columns:
+              - column:
+                  name: to_card_id
+              - column:
+                  name: created_at
